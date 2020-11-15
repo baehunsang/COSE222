@@ -4,7 +4,7 @@
 //          Korea University
 //  Date: July 14, 2020
 //  Description: Skeleton design of RV32I Single-cycle CPU
-//
+//  Addited by 2019320040 BaeHunsang with pipelining
 
 `timescale 1ns/1ns
 `define simdelay 1
