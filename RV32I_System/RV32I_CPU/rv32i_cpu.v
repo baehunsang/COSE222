@@ -4,7 +4,8 @@
 //          Korea University
 //  Date: July 14, 2020
 //  Description: Skeleton design of RV32I Single-cycle CPU
-//  Addited by 2019320040 BaeHunsang with pipelining
+// Addited by 2019320040 BaeHunsang 
+//with pipelining, xori, bgt, slli, auipc instruction
 
 `timescale 1ns/1ns
 `define simdelay 1
@@ -283,6 +284,7 @@ module datapath(input         clk, reset,
   wire		  f3beq, f3blt;
   wire		  beq_taken;
   wire		  blt_taken;
+  wire      bgeu_taken;
   /////////////Change Start : BAeHunsang , Added Wires, change for pc logic //////
   reg [31:0] IF_ID_pc;
   reg  [31:0] ID_EX_pc;//pc wire
@@ -423,6 +425,7 @@ module datapath(input         clk, reset,
         ID_EX_rs2_data <= 32'b0;
         ID_EX_rs1 <= 5'b0;
         ID_EX_rs2 <= 5'b0;
+        ID_EX_rd <= 5'b0;
       end
     else
     begin
@@ -499,7 +502,7 @@ module datapath(input         clk, reset,
   /////////////////////MEM, WB, EX TO ID Forward///////////////////////////
   always @(*)
   begin
-    if ((ID_EX_rd != 0)&&(rs1 == ID_EX_rd)) rs1_data = aluout;
+    if ((ID_EX_rd != 0)&&(rs1 == ID_EX_rd) & ~ID_EX_memwrite) rs1_data = aluout;
     else if ((EX_MEM_rd != 0)&&(rs1 == EX_MEM_rd) & EX_MEM_memread) rs1_data = MemRdata[31:0];
     else if ((EX_MEM_rd != 0)&&(rs1 == EX_MEM_rd) & ~EX_MEM_memread)  rs1_data = EX_MEM_aluout[31:0];
     else if ((MEM_WB_rd != 0)&&(rs1 == MEM_WB_rd)) rs1_data = rd_data[31:0];
@@ -507,7 +510,7 @@ module datapath(input         clk, reset,
   end
   always @(*)
   begin 
-    if ((ID_EX_rd != 0)&&(rs2 == ID_EX_rd)) rs2_data = aluout; 
+    if ((ID_EX_rd != 0)&&(rs2 == ID_EX_rd)  & ~ID_EX_memwrite) rs2_data = aluout; 
     else if ((EX_MEM_rd != 0)&&(rs2 == EX_MEM_rd) & EX_MEM_memread) rs2_data = MemRdata[31:0];
     else if ((EX_MEM_rd != 0)&&(rs2 == EX_MEM_rd) & ~EX_MEM_memread) rs2_data = EX_MEM_aluout[31:0];
     else if ((MEM_WB_rd != 0)&&(rs2 == MEM_WB_rd)) rs2_data = rd_data[31:0];
